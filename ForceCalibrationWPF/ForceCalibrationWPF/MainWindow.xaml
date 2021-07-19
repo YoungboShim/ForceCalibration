@@ -1,0 +1,46 @@
+﻿<Window x:Class="ForceCalibrationWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ForceCalibrationWPF"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="353.2">
+    <Grid>
+        <ComboBox x:Name="comboBoxLeftRight" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Margin="100,13,0,0" SelectedIndex="0">
+            <ComboBoxItem Content="Left" IsSelected="True"/>
+            <ComboBoxItem Content="Right"/>
+        </ComboBox>
+        <Label x:Name="labelLeftRight" Content="Which Stick?" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"/>
+        <Button x:Name="buttonReset" Content="Reset" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="10,81,0,0"/>
+        <Label x:Name="labelTSPort" Content="TS+ Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,105,0,0"/>
+        <ComboBox x:Name="comboBoxTSPort" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="79,108,0,0"/>
+        <Label x:Name="labelForcePort" Content="Force Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,135,0,0"/>
+        <ComboBox x:Name="comboBoxForcePort" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="79,138,0,0"/>
+        <Button x:Name="buttonConnect" Content="Connect" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="10,166,0,0"/>
+        <Button x:Name="buttonRecord" Content="Record" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="10,240,0,0" Height="71"/>
+        <Label x:Name="labelDirection" Content="Stick direction" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,41,0,0"/>
+        <ComboBox x:Name="comboBoxDir" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Margin="100,44,0,0">
+            <ComboBoxItem Content="E"/>
+            <ComboBoxItem Content="NE"/>
+            <ComboBoxItem Content="N"/>
+            <ComboBoxItem Content="NW"/>
+            <ComboBoxItem Content="W"/>
+            <ComboBoxItem Content="SW"/>
+            <ComboBoxItem Content="S"/>
+            <ComboBoxItem Content="SE"/>
+        </ComboBox>
+        <Canvas x:Name="ForceBarCanvas" Height="300" VerticalAlignment="Top" Margin="0,10,10.2,0" HorizontalAlignment="Right" Width="100">
+            <Line
+                X1="0" Y1="150"
+                X2="100" Y2="150"
+                Stroke="Black"
+                StrokeThickness="2"/>
+            <Polygon
+                Points="0,0,0,300,100,300,100,0"    
+                Stroke="Black"
+                StrokeThickness="1"/>
+        </Canvas>
+
+    </Grid>
+</Window>
