@@ -5,22 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ForceCalibrationWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="353.2">
+        Title="MainWindow" Height="350" Width="368">
     <Grid>
-        <ComboBox x:Name="comboBoxLeftRight" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Margin="100,13,0,0" SelectedIndex="0">
+        <ComboBox x:Name="comboBoxLeftRight" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Margin="100,13,0,0" SelectedIndex="0" SelectionChanged="comboBoxLeftRight_SelectionChanged">
             <ComboBoxItem Content="Left" IsSelected="True"/>
             <ComboBoxItem Content="Right"/>
         </ComboBox>
         <Label x:Name="labelLeftRight" Content="Which Stick?" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"/>
-        <Button x:Name="buttonReset" Content="Reset" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="10,81,0,0"/>
+        <Button x:Name="buttonReset" Content="Reset" HorizontalAlignment="Left" VerticalAlignment="Top" Width="189" Margin="10,72,0,0" Click="buttonReset_Click" Height="28"/>
         <Label x:Name="labelTSPort" Content="TS+ Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,105,0,0"/>
         <ComboBox x:Name="comboBoxTSPort" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="79,108,0,0"/>
         <Label x:Name="labelForcePort" Content="Force Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,135,0,0"/>
         <ComboBox x:Name="comboBoxForcePort" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="79,138,0,0"/>
-        <Button x:Name="buttonConnect" Content="Connect" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="10,166,0,0"/>
+        <Button x:Name="buttonConnect" Content="Connect" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="10,166,0,0" Click="buttonConnect_Click" Height="69"/>
         <Button x:Name="buttonRecord" Content="Record" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="10,240,0,0" Height="71"/>
         <Label x:Name="labelDirection" Content="Stick direction" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,41,0,0"/>
-        <ComboBox x:Name="comboBoxDir" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Margin="100,44,0,0">
+        <ComboBox x:Name="comboBoxDir" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Margin="100,44,0,0" SelectionChanged="comboBoxDir_SelectionChanged">
             <ComboBoxItem Content="E"/>
             <ComboBoxItem Content="NE"/>
             <ComboBoxItem Content="N"/>
@@ -41,6 +41,13 @@
                 Stroke="Black"
                 StrokeThickness="1"/>
         </Canvas>
-
+        <ScrollViewer x:Name="ScrollViewerTS" HorizontalAlignment="Left" Height="64" VerticalAlignment="Top" Width="142" Margin="90,166,0,0">
+            <TextBlock x:Name="textBlockTS" TextWrapping="Wrap" Text="TS+ Log
+                       "/>
+        </ScrollViewer>
+        <ScrollViewer x:Name="ScrollViewerForce" HorizontalAlignment="Left" Height="64" VerticalAlignment="Top" Width="142" Margin="90,240,0,0">
+            <TextBlock x:Name="textBlockForce" TextWrapping="Wrap" Text="Force Log
+                       "/>
+        </ScrollViewer>
     </Grid>
 </Window>
