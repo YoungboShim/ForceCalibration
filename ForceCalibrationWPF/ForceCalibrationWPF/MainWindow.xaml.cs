@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO.Ports;
 using System.IO;
+using System.Windows.Threading;
 
 namespace ForceCalibrationWPF
 {
@@ -28,6 +29,9 @@ namespace ForceCalibrationWPF
         SerialPort serialForce = new SerialPort();
         delegate void SetTextCallBack(ScrollViewer viewer, TextBlock txtBlock, string text);
         delegate void SetSquareHeight(int rawForce);
+        bool IsRecording = false;
+        StreamWriter sw;
+        DispatcherTimer timer;
 
         public MainWindow()
         {
@@ -75,8 +79,8 @@ namespace ForceCalibrationWPF
                 serialTS.Open();
                 serialForce.Open();
 
-                textBlockTS.Text += serialTS.ReadExisting();
-                textBlockForce.Text += serialForce.ReadExisting();
+                textBlockTS.Text = serialTS.ReadExisting();
+                textBlockForce.Text = serialForce.ReadExisting();
 
                 Console.WriteLine("...Success");
                 buttonConnect.Background = Brushes.Orange;
@@ -105,8 +109,8 @@ namespace ForceCalibrationWPF
             serialTS.RtsEnable = true;
             serialForce.RtsEnable = true;
 
-            serialTS.DataReceived += new SerialDataReceivedEventHandler(serialTS_DataReceived);
-            serialForce.DataReceived += new SerialDataReceivedEventHandler(serialForce_DataReceived);            
+            //serialTS.DataReceived += new SerialDataReceivedEventHandler(serialTS_DataReceived);
+            //serialForce.DataReceived += new SerialDataReceivedEventHandler(serialForce_DataReceived);            
         }
 
         private void serialTS_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -172,6 +176,63 @@ namespace ForceCalibrationWPF
                 SetSquareHeight d = new SetSquareHeight(controlForceBar);
                 forceBar.Dispatcher.Invoke(d, new object[] { rawForce });
             }
+        }
+
+        private void buttonRecord_Click(object sender, RoutedEventArgs e)
+        {
+            if(!IsRecording)
+            {
+                // Set up streamwriter
+                string filename = Directory.GetCurrentDirectory();
+                if (IsLeftStick)
+                    filename += "/Left_" + StickDir + ".csv";
+                else
+                    filename += "/Right_" + StickDir + ".csv";
+                Console.WriteLine(filename);
+                sw = new StreamWriter(filename);
+                sw.WriteLine("time,ts_val,gauge_raw,gauge_newton");
+                sw.Flush();
+                Console.WriteLine("File writer open: " + filename);
+
+                // Start timer
+                timer = new DispatcherTimer();
+                timer.Interval = TimeSpan.FromMilliseconds(100);
+                timer.Tick += new EventHandler(double_serial_Tick);
+                timer.Start();
+
+                buttonRecord.Background = Brushes.Green;
+                IsRecording = true;
+            }
+            else
+            {
+                sw.Flush();
+                timer.Stop();
+                buttonRecord.Background = new SolidColorBrush(Color.FromArgb(255, 221, 221, 221));
+                IsRecording = false;
+            }
+        }
+
+        private void double_serial_Tick(object sender, EventArgs e)
+        {
+            string time = DateTime.Now.Minute.ToString() + ":" + DateTime.Now.Second.ToString() + "." + DateTime.Now.Millisecond.ToString();
+
+            string TS_line = serialTS.ReadExisting();
+            string[] TS_val_list = TS_line.Split('\n');
+            int TS_val = 0;
+            if (IsLeftStick)
+                TS_val = int.Parse(TS_val_list[TS_val_list.Length - 2].Split(',')[0]);
+            else
+                TS_val = int.Parse(TS_val_list[TS_val_list.Length - 2].Split(',')[1]);
+
+            string force_line = serialForce.ReadExisting();
+            string[] force_list = force_line.Split('\n');
+            int force_raw = int.Parse(force_list[force_list.Length - 2]);
+            float force_newtons = (float)force_raw * 10f / 1024f;
+
+            string logLine = string.Format("{0},{1},{2},{3}", time, TS_val, force_raw, force_newtons);
+            sw.WriteLine(logLine);
+
+            controlForceBar(force_raw);
         }
     }
 }
