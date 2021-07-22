@@ -27,6 +27,7 @@ namespace ForceCalibrationWPF
         SerialPort serialTS = new SerialPort();
         SerialPort serialForce = new SerialPort();
         delegate void SetTextCallBack(ScrollViewer viewer, TextBlock txtBlock, string text);
+        delegate void SetSquareHeight(int rawForce);
 
         public MainWindow()
         {
@@ -74,7 +75,7 @@ namespace ForceCalibrationWPF
                 serialTS.Open();
                 serialForce.Open();
 
-                textBlockTS.Text += serialTS.ReadLine();
+                textBlockTS.Text += serialTS.ReadExisting();
                 textBlockForce.Text += serialForce.ReadExisting();
 
                 Console.WriteLine("...Success");
@@ -84,7 +85,7 @@ namespace ForceCalibrationWPF
             {
                 Console.WriteLine("Serial port open failed");
                 Console.WriteLine(ex.Message);
-                buttonConnect.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#ffdddddd"));
+                buttonConnect.Background = new SolidColorBrush(Color.FromArgb(255, 221, 221, 221));
             }
         }
 
@@ -94,13 +95,15 @@ namespace ForceCalibrationWPF
                 serialForce.Close();
             if (serialTS.IsOpen)
                 serialTS.Close();
-            buttonConnect.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#ffdddddd"));
+            buttonConnect.Background = new SolidColorBrush(Color.FromArgb(255,221,221,221));
         }
 
         private void InitSerialPorts()
         {
             serialTS.BaudRate = 115200;
             serialForce.BaudRate = 115200;
+            serialTS.RtsEnable = true;
+            serialForce.RtsEnable = true;
 
             serialTS.DataReceived += new SerialDataReceivedEventHandler(serialTS_DataReceived);
             serialForce.DataReceived += new SerialDataReceivedEventHandler(serialForce_DataReceived);            
@@ -110,8 +113,7 @@ namespace ForceCalibrationWPF
         {
             try
             {
-                string line = serialTS.ReadExisting();
-                Console.WriteLine(line);
+                string line = serialTS.ReadLine();
                 if (line != string.Empty)
                 {
                     SetLog(ScrollViewerTS, textBlockTS, line);
@@ -119,7 +121,7 @@ namespace ForceCalibrationWPF
             }
             catch (TimeoutException)
             {
-                Console.WriteLine("Timeout!");
+                Console.WriteLine("Serial TS Timeout!");
             }
         }
 
@@ -131,25 +133,44 @@ namespace ForceCalibrationWPF
                 if (line != string.Empty)
                 {
                     SetLog(ScrollViewerForce, textBlockForce, line);
+                    string[] words = line.Trim('\n').Split('\n');
+                    int rawVal;
+                    if (words.Length > 0 && int.TryParse(words[words.Length - 1], out rawVal))
+                    {
+                        controlForceBar(rawVal);
+                    }
                 }
             }
             catch (TimeoutException)
             {
+                Console.WriteLine("Serial Force Timeout!");
             }
         }
 
         private void SetLog(ScrollViewer viewer, TextBlock txtBlock, string text)
         {
-            Console.WriteLine(text);
             if (txtBlock.Dispatcher.CheckAccess())
             {
-                txtBlock.Text += text;
-                viewer.ScrollToEnd();
+                txtBlock.Text = text;
             }
             else
             {
                 SetTextCallBack d = new SetTextCallBack(SetLog);
                 txtBlock.Dispatcher.Invoke(d, new object[] { viewer, txtBlock, text });
+            }
+        }
+
+        private void controlForceBar(int rawForce)
+        {
+            double height = ForceBarCanvas.ActualHeight * (float)rawForce / 1024f;
+            if (forceBar.Dispatcher.CheckAccess())
+            {
+                forceBar.Height = height;
+            }
+            else
+            {
+                SetSquareHeight d = new SetSquareHeight(controlForceBar);
+                forceBar.Dispatcher.Invoke(d, new object[] { rawForce });
             }
         }
     }

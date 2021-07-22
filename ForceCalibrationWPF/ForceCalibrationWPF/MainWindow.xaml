@@ -30,16 +30,20 @@
             <ComboBoxItem Content="S"/>
             <ComboBoxItem Content="SE"/>
         </ComboBox>
-        <Canvas x:Name="ForceBarCanvas" Height="300" VerticalAlignment="Top" Margin="0,10,10.2,0" HorizontalAlignment="Right" Width="100">
+        <Canvas x:Name="ForceBarCanvas" Height="300" VerticalAlignment="Top" Margin="0,10,10.2,0" HorizontalAlignment="Right" Width="100" Panel.ZIndex="1">
             <Line
                 X1="0" Y1="150"
                 X2="100" Y2="150"
                 Stroke="Black"
-                StrokeThickness="2"/>
+                StrokeThickness="2" Panel.ZIndex="1"/>
             <Polygon
                 Points="0,0,0,300,100,300,100,0"    
                 Stroke="Black"
-                StrokeThickness="1"/>
+                StrokeThickness="1" Panel.ZIndex="2"/>
+            <Rectangle x:Name="forceBar"
+                Height="100"
+                Fill="Red" Canvas.Top="0" Width="100" VerticalAlignment="Bottom" Panel.ZIndex="0"
+                />
         </Canvas>
         <ScrollViewer x:Name="ScrollViewerTS" HorizontalAlignment="Left" Height="64" VerticalAlignment="Top" Width="142" Margin="90,166,0,0">
             <TextBlock x:Name="textBlockTS" TextWrapping="Wrap" Text="TS+ Log
