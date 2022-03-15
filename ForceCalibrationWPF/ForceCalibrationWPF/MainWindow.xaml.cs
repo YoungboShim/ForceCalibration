@@ -214,7 +214,8 @@ namespace ForceCalibrationWPF
 
         private void double_serial_Tick(object sender, EventArgs e)
         {
-            string time = DateTime.Now.Minute.ToString() + ":" + DateTime.Now.Second.ToString() + "." + DateTime.Now.Millisecond.ToString();
+            DateTime dt = DateTime.Now;
+            string time = dt.Second.ToString() + "." + dt.Millisecond.ToString();
 
             string TS_line = serialTS.ReadExisting();
             string[] TS_val_list = TS_line.Split('\n');
@@ -227,10 +228,13 @@ namespace ForceCalibrationWPF
             string force_line = serialForce.ReadExisting();
             string[] force_list = force_line.Split('\n');
             int force_raw = int.Parse(force_list[force_list.Length - 2]);
-            float force_newtons = (float)force_raw * 10f / 1024f;
+            float force_newtons = 0f;
+            if(force_raw > 0)
+                force_newtons = 0.0189f * (float)force_raw + 0.3502f;
 
             string logLine = string.Format("{0},{1},{2},{3}", time, TS_val, force_raw, force_newtons);
             sw.WriteLine(logLine);
+            sw.Flush();
 
             controlForceBar(force_raw);
         }
